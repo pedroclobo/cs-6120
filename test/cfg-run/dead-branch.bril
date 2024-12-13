@@ -1,0 +1,19 @@
+# RUN: cat %s | bril2json | make-cfg | filecheck %s
+
+# CHECK: digraph G {
+# CHECK-NEXT:   dead;
+# CHECK-NEXT:   end;
+# CHECK-NEXT:   main;
+# CHECK-NEXT:   dead -> end;
+# CHECK-NEXT:   main -> end;
+# CHECK-NEXT: }
+@main {
+  a: int = const 47;
+  cond: bool = const true;
+  jmp .end;
+.dead:
+  a: int = const 1;
+  jmp .end;
+.end:
+  print a;
+}
