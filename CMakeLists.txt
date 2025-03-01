@@ -14,37 +14,33 @@ add_compile_options(
 enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(EXECUTABLES
-  make-cfg
-)
-
 set(OPT_SOURCES
   src/opt/make-cfg.cpp
 )
 
 set(UTILS_SOURCES
   src/utils/basic_block.cpp
+  src/utils/cfg.cpp
+  src/utils/function.cpp
   src/utils/instruction_utils.cpp
   src/utils/parser.cpp
+  src/utils/program.cpp
 )
 
 set(MAIN_SOURCE
   src/utils/cfg.cpp
 )
 
-foreach(EXECUTABLE ${EXECUTABLES})
-  add_executable(${EXECUTABLE}
-    ${MAIN_SOURCE}
-    ${UTILS_SOURCES}
-    ${OPT_SOURCES}
-  )
+add_executable(make-cfg
+  src/opt/make-cfg.cpp
+  ${UTILS_SOURCES}
+)
 
-  target_include_directories(${EXECUTABLE} PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/dep
-    ${CMAKE_SOURCE_DIR}/src/opt
-    ${CMAKE_SOURCE_DIR}/src/utils
-  )
-endforeach()
+target_include_directories(make-cfg PRIVATE
+  ${CMAKE_SOURCE_DIR}/src/dep
+  ${CMAKE_SOURCE_DIR}/src/opt
+  ${CMAKE_SOURCE_DIR}/src/utils
+)
 
 find_program(LIT NAMES lit)
 if(NOT LIT)
@@ -53,6 +49,6 @@ endif()
 
 add_custom_target(check
   COMMAND ${LIT} -s ${CMAKE_SOURCE_DIR}/test
-  DEPENDS ${EXECUTABLES}
+  DEPENDS make-cfg
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

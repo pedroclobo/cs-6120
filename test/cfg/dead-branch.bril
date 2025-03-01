@@ -3,9 +3,9 @@
 # CHECK: digraph G {
 # CHECK-NEXT:   dead;
 # CHECK-NEXT:   end;
-# CHECK-NEXT:   main;
+# CHECK-NEXT:   entry;
 # CHECK-NEXT:   dead -> end;
-# CHECK-NEXT:   main -> end;
+# CHECK-NEXT:   entry -> end;
 # CHECK-NEXT: }
 @main {
   a: int = const 47;

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "program.h"
 #include <json.h>
 
 using Json = nlohmann::json;
 
-class Parser {
-  static Json parse();
+struct Parser {
+  static Program parse(std::string_view prog);
 };

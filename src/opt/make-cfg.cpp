@@ -3,6 +3,7 @@
 #include <optional>
 #include <sstream>
 
+#include "parser.h"
 #include <cfg.h>
 
 void help(std::string_view program) {
@@ -34,9 +35,8 @@ int main(int argc, char *argv[]) {
   std::stringstream buffer;
   buffer << std::cin.rdbuf();
 
-  const auto prog = Json::parse(buffer.str());
-  const auto bbs = BasicBlock::fromJson(prog);
-  const auto cfg = CFG::fromBasicBlocks(bbs);
+  const auto prog = Parser::parse(buffer.str());
+  const auto cfg = CFG::build(prog[0]);
 
   if (!dotFilename.has_value() || *dotFilename == "-") {
     cfg.writeDot(std::cout);

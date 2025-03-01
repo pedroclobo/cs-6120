@@ -15,3 +15,24 @@ bool InstructionUtils::isBr(const Json &instr) {
 bool InstructionUtils::isLabel(const Json &instr) {
   return instr.contains("label");
 }
+
+std::vector<std::unique_ptr<Json>>
+InstructionUtils::getArgs(const Json &instr) {
+  std::vector<std::unique_ptr<Json>> args;
+  if (instr.contains("args") && instr["args"].is_array()) {
+    for (const auto &arg : instr["args"]) {
+      args.push_back(std::make_unique<Json>(arg));
+    }
+  }
+  return args;
+}
+
+bool InstructionUtils::hasDest(const Json &instr) {
+  return instr.contains("dest");
+}
+
+std::string InstructionUtils::getDest(const Json &instr) {
+  if (hasDest(instr))
+    return instr["dest"];
+  return nullptr;
+}

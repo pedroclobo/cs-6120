@@ -17,12 +17,18 @@ public:
   void setName(std::string &&newName);
 
   bool empty() const;
+  size_t size() const;
   const Json &operator[](size_t i) const;
   const Json &last() const;
 
-  void addInstruction(const Json &instr);
+  auto begin() { return m_instructions.begin(); }
+  auto end() { return m_instructions.end(); }
+  auto begin() const { return m_instructions.begin(); }
+  auto end() const { return m_instructions.end(); }
 
-  static std::vector<BasicBlock> fromJson(const Json &prog);
+  void addInstruction(const Json &instr);
+  void removeInstruction(size_t i);
 
   friend std::ostream &operator<<(std::ostream &os, const BasicBlock &bb);
+  Json toJson() const;
 };

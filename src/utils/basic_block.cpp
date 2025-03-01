@@ -7,6 +7,8 @@ void BasicBlock::setName(std::string &&newName) { m_name = std::move(newName); }
 
 bool BasicBlock::empty() const { return m_instructions.empty(); }
 
+size_t BasicBlock::size() const { return m_instructions.size(); }
+
 const Json &BasicBlock::operator[](size_t i) const {
   assert(i >= 0 && i < m_instructions.size());
   return m_instructions[i];
@@ -21,41 +23,20 @@ void BasicBlock::addInstruction(const Json &instr) {
   m_instructions.push_back(std::move(instr));
 }
 
-std::vector<BasicBlock> BasicBlock::fromJson(const Json &prog) {
-  auto bbs = std::vector<BasicBlock>();
-  std::string name = "main";
+void BasicBlock::removeInstruction(size_t i) {
+  assert(i >= 0 && i < m_instructions.size());
+  m_instructions.erase(m_instructions.begin() + static_cast<long>(i));
+}
 
-  for (const auto &func : prog["functions"]) {
-    BasicBlock bb("entry");
-    for (const auto &instr : func["instrs"]) {
-      if (InstructionUtils::isLabel(instr)) {
-        if (!bb.m_instructions.empty()) {
-          bb.setName(std::move(name));
-          bbs.push_back(bb);
-        }
-        bb = BasicBlock();
-        name = instr["label"];
-      } else {
-        bb.addInstruction(instr);
-        if (InstructionUtils::isTerminator(instr)) {
-          bbs.push_back(bb);
-          bb = BasicBlock();
-        }
-      }
-    }
-    if (!bb.m_instructions.empty()) {
-      bb.setName(std::move(name));
-      bbs.push_back(bb);
-    }
-  }
-
-  return bbs;
+Json BasicBlock::toJson() const {
+  Json json;
+  json["name"] = m_name;
+  for (const auto &instr : m_instructions)
+    json["instrs"].push_back(instr);
+  return json;
 }
 
 std::ostream &operator<<(std::ostream &os, const BasicBlock &bb) {
-  os << bb.m_name << ": ";
-  for (const auto &instr : bb.m_instructions)
-    os << "\n  " << instr;
-  os << std::endl;
+  os << bb.toJson().dump(2);
   return os;
 };

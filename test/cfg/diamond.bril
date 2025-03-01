@@ -2,12 +2,12 @@
 
 # CHECK: digraph G {
 # CHECK-NEXT:   end;
+# CHECK-NEXT:   entry;
 # CHECK-NEXT:   left;
-# CHECK-NEXT:   main;
 # CHECK-NEXT:   right;
+# CHECK-NEXT:   entry -> left;
+# CHECK-NEXT:   entry -> right;
 # CHECK-NEXT:   left -> end;
-# CHECK-NEXT:   main -> left;
-# CHECK-NEXT:   main -> right;
 # CHECK-NEXT:   right -> end;
 # CHECK-NEXT: }
 @main {
