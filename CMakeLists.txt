@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_compile_options(
   -Wall -Wextra -Werror -Wconversion -Wpedantic -Wshadow -Wunused
-  -Wold-style-cast -Wnull-dereference
+  -Wold-style-cast -Wnull-dereference -fno-rtti -fno-exceptions
 )
 
 enable_testing()
