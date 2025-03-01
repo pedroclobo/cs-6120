@@ -1,13 +1,13 @@
 #pragma once
 
-#include "basic_block.h"
-#include "function.h"
-#include <json.h>
 #include <vector>
 
-using Json = nlohmann::json;
+#include "function.h"
+#include "json.h"
 
 class Program {
+  using Json = nlohmann::json;
+
   std::vector<Function> m_funcs;
 
 public:

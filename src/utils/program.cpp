@@ -3,6 +3,8 @@
 #include "json.h"
 #include "program.h"
 
+using Json = nlohmann::json;
+
 Json Program::toJson() const {
   Json json;
 

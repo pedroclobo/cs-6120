@@ -1,5 +1,7 @@
 #include "basic_block.h"
-#include "instruction_utils.h"
+#include "json.h"
+
+using Json = nlohmann::json;
 
 const std::string &BasicBlock::getName() const { return m_name; }
 

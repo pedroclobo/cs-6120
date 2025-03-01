@@ -1,4 +1,7 @@
-#include <instruction_utils.h>
+#include "instruction_utils.h"
+#include "json.h"
+
+using Json = nlohmann::json;
 
 bool InstructionUtils::isTerminator(const Json &instr) {
   return instr.contains("op") && instr["op"] == "ret";

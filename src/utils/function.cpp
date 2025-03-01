@@ -1,6 +1,9 @@
 #include <iostream>
 
 #include "function.h"
+#include "json.h"
+
+using Json = nlohmann::json;
 
 Json Function::toJson() const {
   Json json;

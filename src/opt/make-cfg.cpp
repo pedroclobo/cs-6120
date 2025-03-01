@@ -3,8 +3,8 @@
 #include <optional>
 #include <sstream>
 
+#include "cfg.h"
 #include "parser.h"
-#include <cfg.h>
 
 void help(std::string_view program) {
   std::cerr << "Usage: " << program << " [-o <dot>] [-pdf <pdf>]\n"

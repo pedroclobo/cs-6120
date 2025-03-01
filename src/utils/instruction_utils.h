@@ -2,9 +2,9 @@
 
 #include <json.h>
 
-using Json = nlohmann::json;
-
 class InstructionUtils {
+  using Json = nlohmann::json;
+
 public:
   static bool isTerminator(const Json &instr);
   static bool isJmp(const Json &instr);

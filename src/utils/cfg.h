@@ -4,8 +4,6 @@
 #include <vector>
 
 #include "function.h"
-#include <basic_block.h>
-#include <instruction_utils.h>
 
 class CFG {
   std::map<std::string, std::vector<std::string>> m_edges;

@@ -3,6 +3,9 @@
 #include "basic_block.h"
 #include "dce.h"
 #include "instruction_utils.h"
+#include "json.h"
+
+using Json = nlohmann::json;
 
 void LDCE::run(BasicBlock &bb) {
   std::unordered_set<std::string> used;

@@ -1,5 +1,8 @@
 #include "parser.h"
 #include "instruction_utils.h"
+#include "json.h"
+
+using Json = nlohmann::json;
 
 Program Parser::parse(std::string_view prog) {
   const auto json = Json::parse(prog);

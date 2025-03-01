@@ -3,9 +3,9 @@
 #include <json.h>
 #include <vector>
 
-using Json = nlohmann::json;
-
 class BasicBlock {
+  using Json = nlohmann::json;
+
   std::string m_name;
   std::vector<Json> m_instructions;
 

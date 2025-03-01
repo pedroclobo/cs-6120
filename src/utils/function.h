@@ -1,9 +1,12 @@
 #pragma once
 
-#include "basic_block.h"
 #include <vector>
 
+#include "basic_block.h"
+
 class Function {
+  using Json = nlohmann::json;
+
   std::string m_name;
   std::vector<BasicBlock> m_bbs;
 
