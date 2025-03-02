@@ -1,0 +1,12 @@
+# RUN: cat %s | bril2json | dce-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   a: int = const 0;
+# CHECK-NEXT:   print a;
+# CHECK-NEXT: }
+@main {
+  a: int = const 100;
+  a: int = const 42;
+  a: int = const 0;
+  print a;
+}
