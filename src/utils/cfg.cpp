@@ -1,5 +1,4 @@
 #include "cfg.h"
-#include "instruction_utils.h"
 #include "json.h"
 
 using Json = nlohmann::json;
@@ -12,14 +11,15 @@ CFG CFG::build(const Function &f) {
     edges[bb.getName()] = std::vector<std::string>();
     const auto &last = bb.last();
 
-    if (InstructionUtils::isJmp(last)) {
-      edges[bb.getName()].push_back(last["labels"][0]);
-    } else if (InstructionUtils::isBr(last)) {
-      edges[bb.getName()].push_back(last["labels"][0]);
-      edges[bb.getName()].push_back(last["labels"][1]);
+    if (const auto *JmpInst = dynamic_cast<const JumpInstruction *>(&last)) {
+      edges[bb.getName()].push_back(JmpInst->getLabel());
+    } else if (const auto *BrInst =
+                   dynamic_cast<const BranchInstruction *>(&last)) {
+      edges[bb.getName()].push_back(BrInst->getLabel(0));
+      edges[bb.getName()].push_back(BrInst->getLabel(1));
     } else {
       if (i + 1 < e)
-        edges[bb[0]["label"]].push_back(f[i + 1][0]["label"]);
+        edges[bb.getName()].push_back(f[i + 1].getName());
     }
   }
   return CFG(std::move(edges));

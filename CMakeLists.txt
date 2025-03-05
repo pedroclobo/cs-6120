@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_compile_options(
   -Wall -Wextra -Werror -Wconversion -Wpedantic -Wshadow -Wunused
-  -Wold-style-cast -Wnull-dereference -fno-rtti -fno-exceptions
+  -Wold-style-cast -Wnull-dereference -fno-exceptions
 )
 
 enable_testing()
@@ -24,9 +24,10 @@ set(UTILS_SOURCES
   src/utils/cfg.cpp
   src/utils/dce.cpp
   src/utils/function.cpp
-  src/utils/instruction_utils.cpp
+  src/utils/instruction.cpp
   src/utils/parser.cpp
   src/utils/program.cpp
+  src/utils/type.cpp
 )
 
 set(MAIN_SOURCE

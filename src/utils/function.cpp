@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "function.h"
 #include "json.h"
 
@@ -11,7 +9,7 @@ Json Function::toJson() const {
 
   for (const auto &bb : m_bbs)
     for (const auto &instr : bb)
-      json["instrs"].push_back(instr);
+      json["instrs"].push_back(instr->toJson());
 
   return json;
 }

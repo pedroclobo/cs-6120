@@ -1,4 +1,5 @@
 #include "basic_block.h"
+#include "instruction.h"
 #include "json.h"
 
 using Json = nlohmann::json;
@@ -11,17 +12,17 @@ bool BasicBlock::empty() const { return m_instructions.empty(); }
 
 size_t BasicBlock::size() const { return m_instructions.size(); }
 
-const Json &BasicBlock::operator[](size_t i) const {
+const Instruction &BasicBlock::operator[](size_t i) const {
   assert(i >= 0 && i < m_instructions.size());
-  return m_instructions[i];
+  return *m_instructions[i];
 }
 
-const Json &BasicBlock::last() const {
+const Instruction &BasicBlock::last() const {
   assert(!m_instructions.empty());
-  return m_instructions.back();
+  return *m_instructions.back();
 }
 
-void BasicBlock::addInstruction(const Json &instr) {
+void BasicBlock::addInstruction(std::unique_ptr<Instruction> instr) {
   m_instructions.push_back(std::move(instr));
 }
 
@@ -34,7 +35,7 @@ Json BasicBlock::toJson() const {
   Json json;
   json["name"] = m_name;
   for (const auto &instr : m_instructions)
-    json["instrs"].push_back(instr);
+    json["instrs"].push_back(instr->toJson());
   return json;
 }
 
