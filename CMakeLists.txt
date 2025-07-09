@@ -23,12 +23,14 @@ set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=undefined")
 set(OPT_SOURCES
   src/opt/make-cfg.cpp
   src/opt/dce-opt.cpp
+  src/opt/lvn-opt.cpp
 )
 
 set(UTILS_SOURCES
   src/utils/basic_block.cpp
   src/utils/cfg.cpp
   src/utils/dce.cpp
+  src/utils/lvn.cpp
   src/utils/function.cpp
   src/utils/instruction.cpp
   src/utils/parser.cpp
@@ -56,8 +58,17 @@ add_executable(dce-opt
   src/opt/dce-opt.cpp
   ${UTILS_SOURCES}
 )
-
 target_include_directories(dce-opt PRIVATE
+  ${CMAKE_SOURCE_DIR}/src/dep
+  ${CMAKE_SOURCE_DIR}/src/opt
+  ${CMAKE_SOURCE_DIR}/src/utils
+)
+
+add_executable(lvn-opt
+  src/opt/lvn-opt.cpp
+  ${UTILS_SOURCES}
+)
+target_include_directories(lvn-opt PRIVATE
   ${CMAKE_SOURCE_DIR}/src/dep
   ${CMAKE_SOURCE_DIR}/src/opt
   ${CMAKE_SOURCE_DIR}/src/utils
@@ -70,6 +81,6 @@ endif()
 
 add_custom_target(check
   COMMAND ${LIT} -s ${CMAKE_SOURCE_DIR}/test
-  DEPENDS make-cfg dce-opt
+  DEPENDS make-cfg dce-opt lvn-opt
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

@@ -1,0 +1,13 @@
+# RUN: cat %s | bril2json | lvn-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   x: int = const 4;
+# CHECK-NEXT:   print x;
+# CHECK-NEXT: }
+@main {
+  x: int = const 4;
+  copy1: int = id x;
+  copy2: int = id copy1;
+  copy3: int = id copy2;
+  print copy3;
+}

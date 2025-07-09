@@ -17,6 +17,11 @@ const Instruction &BasicBlock::operator[](size_t i) const {
   return *m_instructions[i];
 }
 
+Instruction &BasicBlock::operator[](size_t i) {
+  assert(i >= 0 && i < m_instructions.size());
+  return *m_instructions[i];
+}
+
 const Instruction &BasicBlock::last() const {
   assert(!m_instructions.empty());
   return *m_instructions.back();
@@ -24,6 +29,12 @@ const Instruction &BasicBlock::last() const {
 
 void BasicBlock::addInstruction(std::unique_ptr<Instruction> instr) {
   m_instructions.push_back(std::move(instr));
+}
+
+void BasicBlock::replaceInstruction(std::unique_ptr<Instruction> instr,
+                                    size_t i) {
+  assert(i < m_instructions.size());
+  m_instructions[i] = std::move(instr);
 }
 
 void BasicBlock::removeInstruction(size_t i) {

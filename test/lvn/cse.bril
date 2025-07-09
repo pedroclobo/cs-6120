@@ -1,0 +1,17 @@
+# RUN: cat %s | bril2json | lvn-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   a: int = const 4;
+# CHECK-NEXT:   b: int = const 2;
+# CHECK-NEXT:   sum1: int = add a b;
+# CHECK-NEXT:   prod: int = mul sum1 sum1;
+# CHECK-NEXT:   print prod;
+# CHECK-NEXT: }
+@main {
+  a: int = const 4;
+  b: int = const 2;
+  sum1: int = add a b;
+  sum2: int = add a b;
+  prod: int = mul sum1 sum2;
+  print prod;
+}

@@ -25,6 +25,7 @@ public:
   bool empty() const;
   size_t size() const;
   const Instruction &operator[](size_t i) const;
+  Instruction &operator[](size_t i);
   const Instruction &last() const;
 
   auto begin() { return m_instructions.begin(); }
@@ -33,6 +34,7 @@ public:
   auto end() const { return m_instructions.end(); }
 
   void addInstruction(std::unique_ptr<Instruction> instr);
+  void replaceInstruction(std::unique_ptr<Instruction> instr, size_t i);
   void removeInstruction(size_t i);
 
   friend std::ostream &operator<<(std::ostream &os, const BasicBlock &bb);
