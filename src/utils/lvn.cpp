@@ -118,10 +118,18 @@ std::unique_ptr<lvn::Val> getLVNValue(const Instruction &instr,
   } else if (auto ii = dynamic_cast<const IdInstruction *>(&instr)) {
     return std::unique_ptr(table.value(env[ii->getVar()]));
   } else if (auto ai = dynamic_cast<const AddInstruction *>(&instr)) {
-    const auto &args = ai->getArgs();
+    // Sort arguments by name to deal with addition commutativity
+    auto args = ai->getArgs();
+    std::sort(args.begin(), args.end(), [](const Var &a, const Var &b) {
+      return a.getName() < b.getName();
+    });
     return std::make_unique<lvn::AddVal>(args[0], args[1]);
   } else if (auto mi = dynamic_cast<const MulInstruction *>(&instr)) {
-    const auto &args = mi->getArgs();
+    // Sort arguments by name to deal with multiplication commutativity
+    auto args = mi->getArgs();
+    std::sort(args.begin(), args.end(), [](const Var &a, const Var &b) {
+      return a.getName() < b.getName();
+    });
     return std::make_unique<lvn::MulVal>(args[0], args[1]);
   }
   std::unreachable();
