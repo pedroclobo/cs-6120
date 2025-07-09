@@ -2,17 +2,23 @@ cmake_minimum_required(VERSION 3.20)
 project(CS-6120)
 
 set(CMAKE_CXX_COMPILER "clang++")
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_compile_options(
   -Wall -Wextra -Werror -Wconversion -Wpedantic -Wshadow -Wunused
-  -Wold-style-cast -Wnull-dereference -fno-exceptions
+  -Wold-style-cast -Wnull-dereference -fno-exceptions -g
 )
 
 enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Sanitizers (address and undefined behavior)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-omit-frame-pointer")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=undefined")
 
 set(OPT_SOURCES
   src/opt/make-cfg.cpp
