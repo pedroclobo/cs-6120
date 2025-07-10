@@ -42,6 +42,12 @@ void BasicBlock::removeInstruction(size_t i) {
   m_instructions.erase(m_instructions.begin() + static_cast<long>(i));
 }
 
+void BasicBlock::addPrecedessor(BasicBlock &bb) {
+  m_predecessors.push_back(&bb);
+}
+
+void BasicBlock::addSucessor(BasicBlock &bb) { m_successors.push_back(&bb); }
+
 Json BasicBlock::toJson() const {
   Json json;
   json["name"] = m_name;

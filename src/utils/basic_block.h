@@ -10,10 +10,13 @@ class BasicBlock {
 
   std::string m_name;
   std::vector<std::unique_ptr<Instruction>> m_instructions;
+  std::vector<BasicBlock *> m_predecessors;
+  std::vector<BasicBlock *> m_successors;
 
 public:
   BasicBlock() = default;
-  BasicBlock(std::string &&name) : m_name(std::move(name)) {}
+  BasicBlock(std::string &&name)
+      : m_name(std::move(name)), m_predecessors({}), m_successors({}) {}
   BasicBlock(const BasicBlock &) = delete;
   BasicBlock &operator=(const BasicBlock &) = delete;
   BasicBlock(BasicBlock &&) = default;
@@ -36,6 +39,17 @@ public:
   void addInstruction(std::unique_ptr<Instruction> instr);
   void replaceInstruction(std::unique_ptr<Instruction> instr, size_t i);
   void removeInstruction(size_t i);
+
+  void addPrecedessor(BasicBlock &bb);
+  void addSucessor(BasicBlock &bb);
+
+  const std::vector<BasicBlock *> &successors() const { return m_successors; }
+  std::vector<BasicBlock *> &successors() { return m_successors; }
+
+  const std::vector<BasicBlock *> &predecessors() const {
+    return m_predecessors;
+  }
+  std::vector<BasicBlock *> &predecessors() { return m_predecessors; }
 
   friend std::ostream &operator<<(std::ostream &os, const BasicBlock &bb);
   Json toJson() const;

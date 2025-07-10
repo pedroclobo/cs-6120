@@ -1,6 +1,8 @@
-#include "parser.h"
+#include <utility>
+
 #include "instruction.h"
 #include "json.h"
+#include "parser.h"
 
 using Json = nlohmann::json;
 
@@ -39,6 +41,39 @@ Program Parser::parse(std::string_view prog) {
     if (!bb.empty()) {
       bb.setName(std::move(bb_name));
       bbs.push_back(std::move(bb));
+    }
+
+    auto getBB = [](std::string bb_name,
+                    std::vector<BasicBlock> &bbs) -> BasicBlock * {
+      for (auto &bb : bbs) {
+        if (bb_name == bb.getName())
+          return &bb;
+      }
+      std::unreachable();
+    };
+
+    // Set basic block successors and predecessors
+    for (size_t i = 0, e = bbs.size(); i < e; ++i) {
+      auto &bb = bbs[i];
+      const auto &last = bb.last();
+      if (auto *bi = dynamic_cast<const BranchInstruction *>(&last)) {
+        auto &first_succ = *getBB(bi->getLabel(0), bbs);
+        auto &second_succ = *getBB(bi->getLabel(1), bbs);
+        bb.addSucessor(first_succ);
+        bb.addSucessor(second_succ);
+        first_succ.addPrecedessor(bb);
+        second_succ.addPrecedessor(bb);
+      } else if (auto *ji = dynamic_cast<const JumpInstruction *>(&last)) {
+        auto &succ = *getBB(ji->getLabel(), bbs);
+        bb.addSucessor(succ);
+        succ.addPrecedessor(bb);
+      } else {
+        // Fallthrough to next block
+        if (i + 1 < bbs.size()) {
+          bb.addSucessor(bbs[i + 1]);
+          bbs[i + 1].addPrecedessor(bb);
+        }
+      }
     }
 
     functions.emplace_back(std::move(func[0]["name"]), std::move(bbs));
