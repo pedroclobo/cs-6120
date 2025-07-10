@@ -1,0 +1,14 @@
+# RUN: cat %s | bril2json | const-analysis-opt | filecheck %s
+
+# CHECK: entry: a b c
+# CHECK-NEXT: end: a b c d e
+@main {
+  a: int = const 2;
+  b: int = const 3;
+  c: int = add a b;
+
+.end:
+  d: int = const 2;
+  e: int = mul c d;
+  print e;
+}

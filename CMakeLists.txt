@@ -24,10 +24,12 @@ set(OPT_SOURCES
   src/opt/make-cfg.cpp
   src/opt/dce-opt.cpp
   src/opt/lvn-opt.cpp
+  src/opt/const-analysis-opt.cpp
 )
 
 set(UTILS_SOURCES
   src/utils/basic_block.cpp
+  src/utils/const-analysis.cpp
   src/utils/cfg.cpp
   src/utils/dce.cpp
   src/utils/lvn.cpp
@@ -74,6 +76,16 @@ target_include_directories(lvn-opt PRIVATE
   ${CMAKE_SOURCE_DIR}/src/utils
 )
 
+add_executable(const-analysis-opt
+  src/opt/const-analysis-opt.cpp
+  ${UTILS_SOURCES}
+)
+target_include_directories(const-analysis-opt PRIVATE
+  ${CMAKE_SOURCE_DIR}/src/dep
+  ${CMAKE_SOURCE_DIR}/src/opt
+  ${CMAKE_SOURCE_DIR}/src/utils
+)
+
 find_program(LIT NAMES lit)
 if(NOT LIT)
   message(FATAL_ERROR "lit not found.")
@@ -81,6 +93,6 @@ endif()
 
 add_custom_target(check
   COMMAND ${LIT} -s ${CMAKE_SOURCE_DIR}/test
-  DEPENDS make-cfg dce-opt lvn-opt
+  DEPENDS make-cfg dce-opt lvn-opt const-analysis-opt
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

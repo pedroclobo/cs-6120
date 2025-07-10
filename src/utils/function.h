@@ -24,6 +24,8 @@ public:
     return m_bbs[i];
   }
 
+  const BasicBlock &last() const { return m_bbs[m_bbs.size() - 1]; }
+
   auto begin() { return m_bbs.begin(); }
   auto end() { return m_bbs.end(); }
   auto begin() const { return m_bbs.begin(); }

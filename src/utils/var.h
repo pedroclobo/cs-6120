@@ -16,6 +16,7 @@ public:
   void setName(std::string newName) { m_name = std::move(newName); }
 
   bool operator==(const Var &other) const { return m_name == other.m_name; }
+  bool operator<(const Var &other) const { return m_name < other.m_name; }
 
   Json toJson() const { return m_name; }
   static Var fromJson(const Json &json) { return Var(json.get<std::string>()); }
