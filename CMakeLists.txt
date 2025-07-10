@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_compile_options(
-  -Wall -Wextra -Werror -Wconversion -Wpedantic -Wshadow -Wunused
+  -Wall -Wextra -Werror -Wconversion -Wpedantic -Wunused
   -Wold-style-cast -Wnull-dereference -fno-exceptions -g
 )
 
