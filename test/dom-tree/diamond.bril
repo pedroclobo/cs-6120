@@ -1,0 +1,28 @@
+# RUN: cat %s | bril2json | make-dom-tree | filecheck %s
+
+# CHECK: digraph G {
+# CHECK-NEXT:   entry;
+# CHECK-NEXT:   left;
+# CHECK-NEXT:   right;
+# CHECK-NEXT:   end;
+# CHECK-NEXT:   entry -> entry;
+# CHECK-NEXT:   entry -> left;
+# CHECK-NEXT:   left -> left;
+# CHECK-NEXT:   entry -> right;
+# CHECK-NEXT:   right -> right;
+# CHECK-NEXT:   entry -> end;
+# CHECK-NEXT:   end -> end;
+# CHECK-NEXT: }
+@main {
+  a: int = const 47;
+  cond: bool = const true;
+  br cond .left .right;
+.left:
+  a: int = const 1;
+  jmp .end;
+.right:
+  a: int = const 2;
+  jmp .end;
+.end:
+  print a;
+}
