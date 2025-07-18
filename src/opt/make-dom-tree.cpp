@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
   std::optional<std::string> pdfFilename;
   bool dominators = false;
   bool immediate_dominators = false;
+  bool dominance_frontier = false;
 
   for (int i = 1; i < argc; ++i) {
     std::string_view arg = argv[i];
@@ -29,6 +30,8 @@ int main(int argc, char *argv[]) {
       dominators = true;
     } else if (arg == "-idom") {
       immediate_dominators = true;
+    } else if (arg == "-dfront") {
+      dominance_frontier = true;
     } else if (arg == "--help" || arg == "-h") {
       help(argv[0]);
       return 0;
@@ -51,8 +54,11 @@ int main(int argc, char *argv[]) {
   if (immediate_dominators) {
     tree.writeImmediateDominators(std::cout);
   }
+  if (dominance_frontier) {
+    tree.writeDominanceFrontier(std::cout);
+  }
 
-  if (dominators || immediate_dominators)
+  if (dominators || immediate_dominators || dominance_frontier)
     return 0;
 
   if (!dotFilename.has_value() || *dotFilename == "-") {

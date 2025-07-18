@@ -1,18 +1,27 @@
-# RUN: cat %s | bril2json | make-dom-tree | filecheck %s
+# RUN: cat %s | bril2json | make-dom-tree -dom    | filecheck %s --check-prefix=DOM
+# RUN: cat %s | bril2json | make-dom-tree -idom   | filecheck %s --check-prefix=IDOM
+# RUN: cat %s | bril2json | make-dom-tree -dfront | filecheck %s --check-prefix=DFRONT
 
-# CHECK: digraph G {
-# CHECK-NEXT:   "entry";
-# CHECK-NEXT:   "loop";
-# CHECK-NEXT:   "body";
-# CHECK-NEXT:   "then";
-# CHECK-NEXT:   "endif";
-# CHECK-NEXT:   "exit";
-# CHECK-NEXT:   "entry" -> "loop";
-# CHECK-NEXT:   "loop" -> "body";
-# CHECK-NEXT:   "body" -> "then";
-# CHECK-NEXT:   "body" -> "endif";
-# CHECK-NEXT:   "loop" -> "exit";
-# CHECK-NEXT: }
+# DOM: entry: entry
+# DOM-NEXT: loop: entry, loop
+# DOM-NEXT: body: entry, loop, body
+# DOM-NEXT: then: entry, loop, body, then
+# DOM-NEXT: endif: entry, loop, body, endif
+# DOM-NEXT: exit: entry, loop, exit
+
+# IDOM: entry -> (NULL)
+# IDOM-NEXT: loop -> entry
+# IDOM-NEXT: body -> loop
+# IDOM-NEXT: then -> body
+# IDOM-NEXT: endif -> body
+# IDOM-NEXT: exit -> loop
+
+# DFRONT: entry: {}
+# DFRONT-NEXT: loop: {loop}
+# DFRONT-NEXT: body: {loop}
+# DFRONT-NEXT: then: {endif}
+# DFRONT-NEXT: endif: {loop}
+# DFRONT-NEXT: exit: {}
 @main {
 .entry:
   x: int = const 0;

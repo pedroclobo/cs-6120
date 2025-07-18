@@ -5,7 +5,7 @@
 using Json = nlohmann::json;
 
 static std::map<const BasicBlock *, std::set<const BasicBlock *>>
-buildDominatorMap(const Function &f) {
+computeDominatorMap(const Function &f) {
   auto doms = std::map<const BasicBlock *, std::set<const BasicBlock *>>();
 
   // All blocks have all other blocks as dominators
@@ -49,7 +49,7 @@ buildDominatorMap(const Function &f) {
 // Iterate over the dominators map and rule out every dominator that is not
 // the immediate dominator.
 static std::map<const BasicBlock *, const BasicBlock *>
-buildImmediateDominatorMap(
+computeImmediateDominatorMap(
     const Function &f,
     const std::map<const BasicBlock *, std::set<const BasicBlock *>>
         &dominators) {
@@ -90,10 +90,44 @@ buildImmediateDominatorMap(
   return idoms;
 }
 
+// The dominance tree is given by the immediate dominators only.
+// Iterate over the dominators map and rule out every dominator that is not
+// the immediate dominator.
+static std::map<const BasicBlock *, std::set<const BasicBlock *>>
+computeDominanceFrontier(
+    const Function &f,
+    const std::map<const BasicBlock *, std::set<const BasicBlock *>> &doms) {
+  std::map<const BasicBlock *, std::set<const BasicBlock *>> dfront;
+  for (const auto &bb : f) {
+    dfront[&bb] = {};
+
+    // `bb`'s domination frontier contains `d` if `bb` does not strictly
+    // dominate `d`, but `bb` dominates some predecessor of `d`.
+    for (const auto &d : f) {
+      if (doms.at(&d).count(&bb) && &d != &bb)
+        continue;
+
+      bool doms_any_pred = false;
+      for (const auto pred : d.predecessors()) {
+        if (doms.at(pred).count(&bb)) {
+          doms_any_pred = true;
+          break;
+        }
+      }
+
+      if (doms_any_pred)
+        dfront[&bb].insert(&d);
+    }
+  }
+
+  return dfront;
+}
+
 DomTree DomTree::build(const Function &f) {
-  auto doms = buildDominatorMap(f);
-  auto idoms = buildImmediateDominatorMap(f, doms);
-  return DomTree(std::move(doms), std::move(idoms));
+  auto doms = computeDominatorMap(f);
+  auto idoms = computeImmediateDominatorMap(f, doms);
+  auto dfront = computeDominanceFrontier(f, doms);
+  return DomTree(std::move(doms), std::move(idoms), std::move(dfront));
 }
 
 void DomTree::writeDot(std::ostream &os) const {
@@ -108,16 +142,40 @@ void DomTree::writeDot(std::ostream &os) const {
 
 void DomTree::writeDominators(std::ostream &os) const {
   for (const auto &[bb, doms] : m_doms) {
-    os << '"' << bb->getName() << "\": ";
+    os << bb->getName() << ": ";
+    bool first = true;
     for (const auto &dom : doms) {
-      os << '"' << dom->getName() << "\" ";
+      if (!first)
+        os << ", ";
+      os << dom->getName();
+      first = false;
     }
     os << "\n";
   }
 }
 
 void DomTree::writeImmediateDominators(std::ostream &os) const {
-  for (const auto &[bb, dom] : m_idoms)
+  for (const auto &[bb, dom] : m_idoms) {
+    os << bb->getName() << " -> ";
     if (dom)
-      os << '"' << bb->getName() << "\" - \"" << dom->getName() << "\"\n";
+      os << dom->getName();
+    else
+      os << "(NULL)";
+    os << "\n";
+  }
+}
+
+void DomTree::writeDominanceFrontier(std::ostream &os) const {
+  for (const auto &[bb, front] : m_dfront) {
+    os << bb->getName() << ": ";
+    os << "{";
+    bool first = true;
+    for (const auto &n : front) {
+      if (!first)
+        os << ", ";
+      os << n->getName();
+      first = false;
+    }
+    os << "}\n";
+  }
 }

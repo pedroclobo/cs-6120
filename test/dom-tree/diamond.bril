@@ -1,14 +1,21 @@
-# RUN: cat %s | bril2json | make-dom-tree | filecheck %s
+# RUN: cat %s | bril2json | make-dom-tree -dom    | filecheck %s --check-prefix=DOM
+# RUN: cat %s | bril2json | make-dom-tree -idom   | filecheck %s --check-prefix=IDOM
+# RUN: cat %s | bril2json | make-dom-tree -dfront | filecheck %s --check-prefix=DFRONT
 
-# CHECK: digraph G {
-# CHECK-NEXT:   "entry";
-# CHECK-NEXT:   "left";
-# CHECK-NEXT:   "right";
-# CHECK-NEXT:   "end";
-# CHECK-NEXT:   "entry" -> "left";
-# CHECK-NEXT:   "entry" -> "right";
-# CHECK-NEXT:   "entry" -> "end";
-# CHECK-NEXT: }
+# DOM: entry: entry
+# DOM-NEXT: left: entry, left
+# DOM-NEXT: right: entry, right
+# DOM-NEXT: end: entry, end
+
+# IDOM: entry -> (NULL)
+# IDOM-NEXT: left -> entry
+# IDOM-NEXT: right -> entry
+# IDOM-NEXT: end -> entry
+
+# DFRONT: entry: {}
+# DFRONT-NEXT: left: {end}
+# DFRONT-NEXT: right: {end}
+# DFRONT-NEXT: end: {}
 @main {
   a: int = const 47;
   cond: bool = const true;

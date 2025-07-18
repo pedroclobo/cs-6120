@@ -1,8 +1,10 @@
-# RUN: cat %s | bril2json | make-dom-tree | filecheck %s
+# RUN: cat %s | bril2json | make-dom-tree -dom    | filecheck %s --check-prefix=DOM
+# RUN: cat %s | bril2json | make-dom-tree -idom   | filecheck %s --check-prefix=IDOM
+# RUN: cat %s | bril2json | make-dom-tree -dfront | filecheck %s --check-prefix=DFRONT
 
-# CHECK: digraph G {
-# CHECK-NEXT:   "entry";
-# CHECK-NEXT: }
+# DOM: entry: entry
+# IDOM: entry -> (NULL)
+# DFRONT: entry: {}
 @main {
   a: int = const 4;
   b: int = const 2;
