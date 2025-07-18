@@ -8,7 +8,7 @@
 #include "value.h"
 #include "var.h"
 
-enum class Opcode { Const, Br, Jmp, Add, Mul, Sub, Print };
+enum class Opcode { Const, Id, Br, Jmp, Add, Mul, Sub, Print, Eq, Lt, Gt };
 
 class Instruction {
 protected:
@@ -65,7 +65,7 @@ public:
   IdInstruction(Var dest, Type type, Var var)
       : Instruction({}), m_dest(dest), m_type(type), m_var(var) {}
 
-  Opcode getOpcode() const override { return Opcode::Const; }
+  Opcode getOpcode() const override { return Opcode::Id; }
   std::optional<Var> getDest() const override { return m_dest; }
   Type getType() const override { return m_type; }
   Var getVar() const { return m_var; }
@@ -109,6 +109,20 @@ public:
   Json toJson() const override;
 };
 
+class SubInstruction : public Instruction {
+  Var m_dest;
+  Type m_type;
+
+public:
+  SubInstruction(Var dest, Type type, std::vector<Var> args)
+      : Instruction(args), m_dest(dest), m_type(type) {}
+
+  Opcode getOpcode() const override { return Opcode::Sub; }
+  std::optional<Var> getDest() const override { return m_dest; }
+  Type getType() const override { return m_type; }
+  Json toJson() const override;
+};
+
 class MulInstruction : public Instruction {
   Var m_dest;
   Type m_type;
@@ -118,6 +132,21 @@ public:
       : Instruction(args), m_dest(dest), m_type(type) {}
 
   Opcode getOpcode() const override { return Opcode::Mul; }
+  std::optional<Var> getDest() const override { return m_dest; }
+  Type getType() const override { return m_type; }
+  Json toJson() const override;
+};
+
+class CmpInstruction : public Instruction {
+  Var m_dest;
+  Type m_type;
+  Opcode m_opcode;
+
+public:
+  CmpInstruction(Var dest, Type type, std::vector<Var> args, Opcode opcode)
+      : Instruction(args), m_dest(dest), m_type(type), m_opcode(opcode) {}
+
+  Opcode getOpcode() const override { return m_opcode; }
   std::optional<Var> getDest() const override { return m_dest; }
   Type getType() const override { return m_type; }
   Json toJson() const override;
