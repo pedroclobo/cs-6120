@@ -38,26 +38,27 @@ void ConstAnalysis::run(const Function &f) {
       in[bb_name].insert(out[pred->getName()].begin(),
                          out[pred->getName()].end());
 
-    bool changed = false;
+    for (const auto &in : in[bb_name]) {
+      std::cout << bb->getName() << " " << in.getName() << "\n";
+    }
+
     for (const auto &instr : *bb) {
       if (auto *ci = dynamic_cast<const ConstInstruction *>(instr.get())) {
         in[bb_name].insert(ci->getDest().value());
-        changed = true;
       } else {
         bool all = true;
         for (const auto &var : instr->getArgs())
           all &= in[bb_name].contains(var);
-        if (all && instr->getDest().has_value()) {
+        if (all && instr->getDest().has_value())
           in[bb_name].insert(instr->getDest().value());
-          changed = true;
-        }
       }
     }
-    if (changed) {
-      out[bb_name].insert(in[bb_name].begin(), in[bb_name].end());
+
+    auto old_size = out[bb_name].size();
+    out[bb_name].insert(in[bb_name].begin(), in[bb_name].end());
+    if (old_size != out[bb_name].size())
       for (const auto &succ : bb->successors())
         worklist.push(succ);
-    }
   }
 
   for (const auto &bb : f) {
