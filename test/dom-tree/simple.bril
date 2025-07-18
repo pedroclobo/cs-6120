@@ -1,8 +1,8 @@
 # RUN: cat %s | bril2json | make-dom-tree | filecheck %s
 
 # CHECK: digraph G {
-# CHECK-NEXT:   entry;
-# CHECK-NEXT:   entry -> entry;
+# CHECK-NEXT:   "entry";
+# CHECK-NEXT:   "entry" -> "entry";
 # CHECK-NEXT: }
 @main {
   a: int = const 4;

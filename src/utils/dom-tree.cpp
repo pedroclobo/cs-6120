@@ -64,18 +64,19 @@ DomTree DomTree::build(const Function &f) {
 void DomTree::writeDot(std::ostream &os) const {
   os << "digraph G {\n";
   for (auto [k, v] : m_dominators)
-    os << "  " << k->getName() << ";\n";
+    os << "  \"" << k->getName() << "\";\n";
   for (auto [k, v] : m_dominators)
     for (auto target : v)
-      os << "  " << target->getName() << " -> " << k->getName() << ";\n";
+      os << "  \"" << target->getName() << "\" -> \"" << k->getName()
+         << "\";\n";
   os << "}\n";
 }
 
 void DomTree::writeDominators(std::ostream &os) const {
   for (const auto &[bb, doms] : m_dominators) {
-    os << bb->getName() << ": ";
+    os << '"' << bb->getName() << "\": ";
     for (const auto &dom : doms) {
-      os << dom->getName() << " ";
+      os << '"' << dom->getName() << "\" ";
     }
     os << "\n";
   }

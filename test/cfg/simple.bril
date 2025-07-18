@@ -1,7 +1,7 @@
 # RUN: cat %s | bril2json | make-cfg | filecheck %s
 
 # CHECK: digraph G {
-# CHECK-NEXT:   entry;
+# CHECK-NEXT:   "entry";
 # CHECK-NEXT: }
 @main {
   a: int = const 4;

@@ -28,10 +28,11 @@ CFG CFG::build(const Function &f) {
 void CFG::writeDot(std::ostream &os) const {
   os << "digraph G {\n";
   for (auto [k, v] : m_edges)
-    os << "  " << k->getName() << ";\n";
+    os << "  \"" << k->getName() << "\";\n";
   for (auto [k, v] : m_edges)
     for (auto target : v)
-      os << "  " << k->getName() << " -> " << target->getName() << ";\n";
+      os << "  \"" << k->getName() << "\" -> \"" << target->getName()
+         << "\";\n";
   os << "}\n";
 }
 
