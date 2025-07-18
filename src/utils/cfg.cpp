@@ -27,20 +27,19 @@ CFG CFG::build(const Function &f) {
 
 void CFG::writeDot(std::ostream &os) const {
   os << "digraph G {\n";
-  for (auto [k, v] : m_edges)
-    os << "  \"" << k->getName() << "\";\n";
-  for (auto [k, v] : m_edges)
-    for (auto target : v)
-      os << "  \"" << k->getName() << "\" -> \"" << target->getName()
-         << "\";\n";
+  for (const auto &[in, _] : m_edges)
+    os << "  \"" << in->getName() << "\";\n";
+  for (const auto &[in, outs] : m_edges)
+    for (const auto &out : outs)
+      os << "  \"" << in->getName() << "\" -> \"" << out->getName() << "\";\n";
   os << "}\n";
 }
 
 std::ostream &operator<<(std::ostream &os, const CFG &cfg) {
-  for (auto [k, v] : cfg.m_edges) {
-    os << k->getName() << ": ";
-    for (auto target : v)
-      os << target->getName() << " ";
+  for (const auto &[in, outs] : cfg.m_edges) {
+    os << in->getName() << ": ";
+    for (const auto &out : outs)
+      os << out->getName() << " ";
     os << std::endl;
   }
   return os;
