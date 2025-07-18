@@ -1,10 +1,10 @@
 # RUN: cat %s | bril2json | make-cfg | filecheck %s
 
 # CHECK: digraph G {
-# CHECK-NEXT:   end;
 # CHECK-NEXT:   entry;
 # CHECK-NEXT:   left;
 # CHECK-NEXT:   right;
+# CHECK-NEXT:   end;
 # CHECK-NEXT:   entry -> left;
 # CHECK-NEXT:   entry -> right;
 # CHECK-NEXT:   left -> end;

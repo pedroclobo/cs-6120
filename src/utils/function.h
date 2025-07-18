@@ -12,7 +12,7 @@ class Function {
 
 public:
   Function(std::string &&name, std::vector<BasicBlock> &&bbs)
-      : m_name(name), m_bbs(std::move(bbs)){};
+      : m_name(name), m_bbs(std::move(bbs)) {};
 
   const std::string &getName() const { return m_name; }
   void setName(std::string &&newName) { m_name = std::move(newName); }
@@ -22,6 +22,13 @@ public:
   const BasicBlock &operator[](size_t i) const {
     assert(i >= 0 && i < m_bbs.size());
     return m_bbs[i];
+  }
+
+  const BasicBlock &bb(std::string name) const {
+    for (const auto &bb : m_bbs)
+      if (bb.getName() == name)
+        return bb;
+    std::unreachable();
   }
 
   const BasicBlock &last() const { return m_bbs[m_bbs.size() - 1]; }

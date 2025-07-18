@@ -5,10 +5,10 @@
 #include "function.h"
 
 class CFG {
-  std::map<std::string, std::vector<std::string>> m_edges;
+  std::map<const BasicBlock *, std::vector<const BasicBlock *>> m_edges;
 
 public:
-  CFG(std::map<std::string, std::vector<std::string>> &&edges)
+  CFG(std::map<const BasicBlock *, std::vector<const BasicBlock *>> &&edges)
       : m_edges(std::move(edges)) {}
   static CFG build(const Function &f);
   void writeDot(std::ostream &os) const;
