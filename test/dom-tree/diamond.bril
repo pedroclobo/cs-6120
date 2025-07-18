@@ -5,13 +5,9 @@
 # CHECK-NEXT:   "left";
 # CHECK-NEXT:   "right";
 # CHECK-NEXT:   "end";
-# CHECK-NEXT:   "entry" -> "entry";
 # CHECK-NEXT:   "entry" -> "left";
-# CHECK-NEXT:   "left" -> "left";
 # CHECK-NEXT:   "entry" -> "right";
-# CHECK-NEXT:   "right" -> "right";
 # CHECK-NEXT:   "entry" -> "end";
-# CHECK-NEXT:   "end" -> "end";
 # CHECK-NEXT: }
 @main {
   a: int = const 47;

@@ -2,7 +2,6 @@
 
 # CHECK: digraph G {
 # CHECK-NEXT:   "entry";
-# CHECK-NEXT:   "entry" -> "entry";
 # CHECK-NEXT: }
 @main {
   a: int = const 4;
