@@ -27,6 +27,8 @@ std::unique_ptr<Instruction> Instruction::fromJson(const Json &instr) {
       return Opcode::Gt;
     if (op == "lt")
       return Opcode::Lt;
+    if (op == "phi")
+      return Opcode::Phi;
 
     assert(false && "Invalid opcode when parsing");
   });
@@ -70,6 +72,12 @@ std::unique_ptr<Instruction> Instruction::fromJson(const Json &instr) {
         Var::fromJson(instr.at("dest")), Type::fromJson(instr.at("type")),
         std::vector<Var>(instr.at("args").begin(), instr.at("args").end()),
         opcode);
+  case Opcode::Phi:
+    return std::make_unique<PhiInstruction>(
+        Var::fromJson(instr.at("dest")), Type::fromJson(instr.at("type")),
+        std::vector<Var>(instr.at("args").begin(), instr.at("args").end()),
+        std::vector<std::string>(instr.at("labels").begin(),
+                                 instr.at("labels").end()));
   default:
     assert(false && "Unknown opcode");
   }
@@ -150,4 +158,20 @@ Json PrintInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"op", "print"}, {"args", args}};
+}
+
+Json PhiInstruction::toJson() const {
+  auto args = Json::array();
+  for (const auto &arg : m_args)
+    args.push_back(arg.toJson());
+
+  auto labels = Json::array();
+  for (const auto &label : m_labels)
+    labels.push_back(label);
+
+  return {{"op", "phi"},
+          {"dest", m_dest.value().toJson()},
+          {"type", m_type.toJson()},
+          {"args", args},
+          {"labels", labels}};
 }

@@ -8,7 +8,7 @@
 #include "value.h"
 #include "var.h"
 
-enum class Opcode { Const, Id, Br, Jmp, Add, Mul, Sub, Print, Eq, Lt, Gt };
+enum class Opcode { Const, Id, Br, Jmp, Add, Mul, Sub, Print, Eq, Lt, Gt, Phi };
 
 class Instruction {
 protected:
@@ -151,5 +151,19 @@ struct PrintInstruction : public Instruction {
   PrintInstruction(std::vector<Var> args) : Instruction(args) {}
 
   Opcode getOpcode() const override { return Opcode::Print; }
+  Json toJson() const override;
+};
+
+class PhiInstruction : public Instruction {
+  Type m_type;
+  std::vector<std::string> m_labels;
+
+public:
+  PhiInstruction(Var dest, Type type, std::vector<Var> args,
+                 std::vector<std::string> labels)
+      : Instruction(args, std::move(dest)), m_type(type), m_labels(labels) {}
+
+  Opcode getOpcode() const override { return Opcode::Phi; }
+  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
