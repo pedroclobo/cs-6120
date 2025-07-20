@@ -20,6 +20,11 @@ public:
 
   Json toJson() const { return m_name; }
   static Var fromJson(const Json &json) { return Var(json.get<std::string>()); }
+
+  friend std::ostream &operator<<(std::ostream &os, const Var &var) {
+    os << "Var(" << var.m_name << ")";
+    return os;
+  }
 };
 
 namespace std {
