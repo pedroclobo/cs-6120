@@ -147,10 +147,10 @@ void LVN::run(BasicBlock &bb) {
     }
 
     // Do not bother with instruction that do not produce a value
-    if (!instr.getDest().has_value())
+    if (!instr.getDest())
       continue;
 
-    const auto var = instr.getDest().value().getName();
+    const auto var = instr.getDest()->getName();
     auto lvn_value = getLVNValue(instr, table, env);
     const auto lookup_result = table.lookup(*lvn_value);
     if (lookup_result.has_value()) {

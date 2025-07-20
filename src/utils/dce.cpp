@@ -22,8 +22,8 @@ void LDCE::run(BasicBlock &bb) {
     for (int i = static_cast<int>(bb.size()) - 1; i >= 0; --i) {
       const auto &instr = bb[static_cast<size_t>(i)];
       bool removed = false;
-      if (instr.getDest().has_value()) {
-        const auto dest = instr.getDest().value().getName();
+      if (instr.getDest()) {
+        const auto dest = instr.getDest()->getName();
         if (seen_def[dest]) {
           // We've already seen a declaration for this variable that succeeds
           // the current declaration. This is a dead declaration. Remove it.
@@ -42,8 +42,8 @@ void LDCE::run(BasicBlock &bb) {
         continue;
 
       // If the value produced by the instruction is not used, remove it.
-      if (instr.getDest().has_value()) {
-        const auto dest = instr.getDest().value().getName();
+      if (instr.getDest()) {
+        const auto dest = instr.getDest()->getName();
         if (used.find(dest) == used.end()) {
           bb.removeInstruction(static_cast<size_t>(i));
           changed = true;

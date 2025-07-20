@@ -44,13 +44,13 @@ void ConstAnalysis::run(const Function &f) {
 
     for (const auto &instr : *bb) {
       if (auto *ci = dynamic_cast<const ConstInstruction *>(instr.get())) {
-        in[bb_name].insert(ci->getDest().value());
+        in[bb_name].insert(*ci->getDest());
       } else {
         bool all = true;
         for (const auto &var : instr->getArgs())
           all &= in[bb_name].contains(var);
-        if (all && instr->getDest().has_value())
-          in[bb_name].insert(instr->getDest().value());
+        if (all && instr->getDest())
+          in[bb_name].insert(*instr->getDest());
       }
     }
 

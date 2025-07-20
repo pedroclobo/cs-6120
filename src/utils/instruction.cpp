@@ -76,7 +76,7 @@ std::unique_ptr<Instruction> Instruction::fromJson(const Json &instr) {
 }
 
 Json ConstInstruction::toJson() const {
-  return {{"dest", m_dest.toJson()},
+  return {{"dest", m_dest.value().toJson()},
           {"op", "const"},
           {"type", m_type.toJson()},
           {"value", m_value.toJson()}};
@@ -86,7 +86,7 @@ Json IdInstruction::toJson() const {
   auto args = Json::array();
   args.push_back(m_var.toJson());
 
-  return {{"dest", m_dest.toJson()},
+  return {{"dest", m_dest.value().toJson()},
           {"op", "id"},
           {"type", m_type.toJson()},
           {"args", args}};
@@ -106,7 +106,7 @@ Json AddInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"args", args},
-          {"dest", m_dest.toJson()},
+          {"dest", m_dest.value().toJson()},
           {"op", "add"},
           {"type", m_type.toJson()}};
 }
@@ -117,7 +117,7 @@ Json SubInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"args", args},
-          {"dest", m_dest.toJson()},
+          {"dest", m_dest.value().toJson()},
           {"op", "sub"},
           {"type", m_type.toJson()}};
 }
@@ -128,7 +128,7 @@ Json MulInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"args", args},
-          {"dest", m_dest.toJson()},
+          {"dest", m_dest.value().toJson()},
           {"op", "mul"},
           {"type", m_type.toJson()}};
 }
@@ -139,7 +139,7 @@ Json CmpInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"args", args},
-          {"dest", m_dest.toJson()},
+          {"dest", m_dest.value().toJson()},
           {"op", m_opcode},
           {"type", m_type.toJson()}};
 }
