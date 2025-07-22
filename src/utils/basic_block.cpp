@@ -52,12 +52,15 @@ void BasicBlock::addPrecedessor(BasicBlock &bb) {
 
 void BasicBlock::addSucessor(BasicBlock &bb) { m_successors.push_back(&bb); }
 
-Json BasicBlock::toJson() const {
-  Json json;
-  json["name"] = m_name;
+Json BasicBlock::toJson(bool emitLabel) const {
+  Json instrs = Json::array();
+  if (emitLabel)
+    instrs.push_back({{"label", m_name}});
+
   for (const auto &instr : m_instructions)
-    json["instrs"].push_back(instr->toJson());
-  return json;
+    instrs.push_back(instr->toJson());
+
+  return instrs;
 }
 
 std::ostream &operator<<(std::ostream &os, const BasicBlock &bb) {

@@ -6,10 +6,14 @@ using Json = nlohmann::json;
 Json Function::toJson() const {
   Json json;
   json["name"] = m_name;
+  json["instrs"] = Json::array();
 
-  for (const auto &bb : m_bbs)
-    for (const auto &instr : bb)
-      json["instrs"].push_back(instr->toJson());
+  bool first = true;
+  for (const auto &bb : m_bbs) {
+    for (const auto &instr : bb.toJson(!first))
+      json["instrs"].push_back(instr);
+    first = false;
+  }
 
   return json;
 }

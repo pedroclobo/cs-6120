@@ -54,5 +54,5 @@ public:
   std::vector<BasicBlock *> &predecessors() { return m_predecessors; }
 
   friend std::ostream &operator<<(std::ostream &os, const BasicBlock &bb);
-  Json toJson() const;
+  Json toJson(bool emitLabel = true) const;
 };
