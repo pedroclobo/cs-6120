@@ -143,7 +143,7 @@ void LVN::run(BasicBlock &bb) {
     // Replace instruction arguments by canonical argument
     for (size_t idx = 0, num_args = instr.getNumArgs(); idx < num_args; ++idx) {
       auto new_arg = Var(table.at(env[instr.getArg(idx)]));
-      instr.setArg(new_arg, idx);
+      instr.setArg(Var(table.at(env[instr.getArg(idx)])), idx);
     }
 
     // Do not bother with instruction that do not produce a value

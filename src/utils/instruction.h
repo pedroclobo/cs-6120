@@ -15,18 +15,22 @@ protected:
   using Json = nlohmann::json;
   std::vector<Var> m_args;
   std::optional<Var> m_dest;
+  Type m_type;
 
   Instruction(std::vector<Var> args)
-      : m_args(std::move(args)), m_dest(std::nullopt) {}
+      : m_args(std::move(args)), m_dest(std::nullopt),
+        m_type(Type::getVoidType()) {}
   Instruction(std::vector<Var> args, Var &&var)
-      : m_args(std::move(args)), m_dest(var) {}
+      : m_args(std::move(args)), m_dest(var), m_type(Type::getVoidType()) {}
+  Instruction(std::vector<Var> args, Var &&var, Type type)
+      : m_args(std::move(args)), m_dest(var), m_type(type) {}
 
 public:
   virtual ~Instruction() = default;
   virtual Opcode getOpcode() const = 0;
   virtual Json toJson() const = 0;
 
-  virtual Type getType() const { return Type::getVoidType(); }
+  virtual Type getType() const { return m_type; }
   // TODO: we can maybe merge `getValue` and `getArgs`
   virtual std::optional<Value> getValue() const { return std::nullopt; }
   virtual const std::vector<Var> getArgs() const { return m_args; }
@@ -35,11 +39,18 @@ public:
     assert(i < m_args.size());
     return m_args[i];
   }
-  virtual void setArg(Var &arg, size_t i) {
+  virtual Var &getArg(size_t i) {
+    assert(i < m_args.size());
+    return m_args[i];
+  }
+  virtual void setArg(Var &&arg, size_t i) {
     assert(i < m_args.size());
     m_args[i] = arg;
   }
   virtual const Var *getDest() const {
+    return m_dest.has_value() ? &m_dest.value() : nullptr;
+  }
+  virtual Var *getDest() {
     return m_dest.has_value() ? &m_dest.value() : nullptr;
   }
   virtual void setDest(Var &&dest) { m_dest = dest; }
@@ -48,29 +59,25 @@ public:
 };
 
 class ConstInstruction : public Instruction {
-  Type m_type;
   Value m_value;
 
 public:
   ConstInstruction(Var dest, Type type, Value value)
-      : Instruction({}, std::move(dest)), m_type(type), m_value(value) {}
+      : Instruction({}, std::move(dest), type), m_value(value) {}
 
   Opcode getOpcode() const override { return Opcode::Const; }
-  Type getType() const override { return m_type; }
   std::optional<Value> getValue() const override { return m_value; }
   Json toJson() const override;
 };
 
 class IdInstruction : public Instruction {
-  Type m_type;
   Var m_var;
 
 public:
   IdInstruction(Var dest, Type type, Var var)
-      : Instruction({}, std::move(dest)), m_type(type), m_var(var) {}
+      : Instruction({}, std::move(dest), type), m_var(var) {}
 
   Opcode getOpcode() const override { return Opcode::Id; }
-  Type getType() const override { return m_type; }
   Var getVar() const { return m_var; }
   Json toJson() const override;
 };
@@ -91,59 +98,46 @@ class JumpInstruction : public Instruction {
   std::string m_label;
 
 public:
-  JumpInstruction(std::string label) : Instruction({}), m_label(label) {}
+  JumpInstruction(std::string label)
+      : Instruction({}), m_label(std::move(label)) {}
 
   Opcode getOpcode() const override { return Opcode::Jmp; }
   const std::string &getLabel() const { return m_label; }
   Json toJson() const override;
 };
 
-class AddInstruction : public Instruction {
-  Type m_type;
-
-public:
+struct AddInstruction : public Instruction {
   AddInstruction(Var dest, Type type, std::vector<Var> args)
-      : Instruction(args, std::move(dest)), m_type(type) {}
+      : Instruction(args, std::move(dest), type) {}
 
   Opcode getOpcode() const override { return Opcode::Add; }
-  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
 
-class SubInstruction : public Instruction {
-  Type m_type;
-
-public:
+struct SubInstruction : public Instruction {
   SubInstruction(Var dest, Type type, std::vector<Var> args)
-      : Instruction(args, std::move(dest)), m_type(type) {}
+      : Instruction(args, std::move(dest), type) {}
 
   Opcode getOpcode() const override { return Opcode::Sub; }
-  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
 
-class MulInstruction : public Instruction {
-  Type m_type;
-
-public:
+struct MulInstruction : public Instruction {
   MulInstruction(Var dest, Type type, std::vector<Var> args)
-      : Instruction(args, std::move(dest)), m_type(type) {}
+      : Instruction(args, std::move(dest), type) {}
 
   Opcode getOpcode() const override { return Opcode::Mul; }
-  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
 
 class CmpInstruction : public Instruction {
-  Type m_type;
   Opcode m_opcode;
 
 public:
   CmpInstruction(Var dest, Type type, std::vector<Var> args, Opcode opcode)
-      : Instruction(args, std::move(dest)), m_type(type), m_opcode(opcode) {}
+      : Instruction(args, std::move(dest), type), m_opcode(opcode) {}
 
   Opcode getOpcode() const override { return m_opcode; }
-  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
 
@@ -155,15 +149,13 @@ struct PrintInstruction : public Instruction {
 };
 
 class PhiInstruction : public Instruction {
-  Type m_type;
   std::vector<std::string> m_labels;
 
 public:
   PhiInstruction(Var dest, Type type, std::vector<Var> args,
                  std::vector<std::string> labels)
-      : Instruction(args, std::move(dest)), m_type(type), m_labels(labels) {}
+      : Instruction(args, std::move(dest), type), m_labels(labels) {}
 
   Opcode getOpcode() const override { return Opcode::Phi; }
-  Type getType() const override { return m_type; }
   Json toJson() const override;
 };
