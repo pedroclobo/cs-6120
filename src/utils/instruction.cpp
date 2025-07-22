@@ -44,9 +44,11 @@ std::unique_ptr<Instruction> Instruction::fromJson(const Json &instr) {
                                            Type::fromJson(instr.at("type")),
                                            Var::fromJson(instr.at("args")[0]));
   case Opcode::Br:
-    return std::make_unique<BranchInstruction>(std::array<std::string, 2>{
-        instr.at("labels").at(0).get<std::string>(),
-        instr.at("labels").at(1).get<std::string>()});
+    return std::make_unique<BranchInstruction>(
+        Var::fromJson(instr.at("args").back()),
+        std::array<std::string, 2>{
+            instr.at("labels").at(0).get<std::string>(),
+            instr.at("labels").at(1).get<std::string>()});
   case Opcode::Jmp:
     return std::make_unique<JumpInstruction>(
         instr.at("labels").at(0).get<std::string>());
@@ -101,11 +103,13 @@ Json IdInstruction::toJson() const {
 }
 
 Json BranchInstruction::toJson() const {
-  return {{"op", "br"}, {"label", m_label}};
+  auto args = Json::array();
+  args.push_back(m_args[0].toJson());
+  return {{"op", "br"}, {"labels", m_labels}, {"args", args}};
 }
 
 Json JumpInstruction::toJson() const {
-  return {{"op", "jmp"}, {"label", m_label}};
+  return {{"op", "jmp"}, {"labels", {m_label}}};
 }
 
 Json AddInstruction::toJson() const {

@@ -76,14 +76,14 @@ public:
 };
 
 class BranchInstruction : public Instruction {
-  std::array<std::string, 2> m_label;
+  std::array<std::string, 2> m_labels;
 
 public:
-  BranchInstruction(std::array<std::string, 2> label)
-      : Instruction({}), m_label(label) {}
+  BranchInstruction(Var &&cond, std::array<std::string, 2> labels)
+      : Instruction({cond}), m_labels(labels) {}
 
   Opcode getOpcode() const override { return Opcode::Br; }
-  const std::string &getLabel(size_t i) const { return m_label[i]; }
+  const std::string &getLabel(size_t i) const { return m_labels[i]; }
   Json toJson() const override;
 };
 
