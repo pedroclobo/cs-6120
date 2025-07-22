@@ -27,8 +27,12 @@ const Instruction &BasicBlock::last() const {
   return *m_instructions.back();
 }
 
-void BasicBlock::addInstruction(std::unique_ptr<Instruction> instr) {
+void BasicBlock::appendInstruction(std::unique_ptr<Instruction> instr) {
   m_instructions.push_back(std::move(instr));
+}
+
+void BasicBlock::prependInstruction(std::unique_ptr<Instruction> instr) {
+  m_instructions.push_front(std::move(instr));
 }
 
 void BasicBlock::replaceInstruction(std::unique_ptr<Instruction> instr,

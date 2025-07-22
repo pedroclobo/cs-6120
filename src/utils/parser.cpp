@@ -30,7 +30,7 @@ Program Parser::parse(std::string_view prog) {
         bb = BasicBlock();
         bb_name = instr["label"];
       } else {
-        bb.addInstruction(Instruction::fromJson(instr));
+        bb.appendInstruction(Instruction::fromJson(instr));
         if (isTerminator(instr)) {
           bbs.push_back(std::move(bb));
           bb = BasicBlock();

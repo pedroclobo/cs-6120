@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include <vector>
 
 #include "instruction.h"
@@ -9,7 +10,7 @@ class BasicBlock {
   using Json = nlohmann::json;
 
   std::string m_name;
-  std::vector<std::unique_ptr<Instruction>> m_instructions;
+  std::deque<std::unique_ptr<Instruction>> m_instructions;
   std::vector<BasicBlock *> m_predecessors;
   std::vector<BasicBlock *> m_successors;
 
@@ -36,7 +37,8 @@ public:
   auto begin() const { return m_instructions.begin(); }
   auto end() const { return m_instructions.end(); }
 
-  void addInstruction(std::unique_ptr<Instruction> instr);
+  void appendInstruction(std::unique_ptr<Instruction> instr);
+  void prependInstruction(std::unique_ptr<Instruction> instr);
   void replaceInstruction(std::unique_ptr<Instruction> instr, size_t i);
   void removeInstruction(size_t i);
 
