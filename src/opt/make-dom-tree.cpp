@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   std::stringstream buffer;
   buffer << std::cin.rdbuf();
 
-  const auto prog = Parser::parse(buffer.str());
+  auto prog = Parser::parse(buffer.str());
   const auto tree = DomTree::build(prog[0]);
 
   if (dominators) {

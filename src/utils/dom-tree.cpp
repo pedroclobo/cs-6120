@@ -4,28 +4,28 @@
 
 using Json = nlohmann::json;
 
-static std::map<const BasicBlock *, std::set<const BasicBlock *>>
-computeDominatorMap(const Function &f) {
-  auto doms = std::map<const BasicBlock *, std::set<const BasicBlock *>>();
+static std::map<BasicBlock *, std::set<BasicBlock *>>
+computeDominatorMap(Function &f) {
+  auto doms = std::map<BasicBlock *, std::set<BasicBlock *>>();
 
   // All blocks have all other blocks as dominators
-  for (const auto &bb : f) {
+  for (auto &bb : f) {
     doms[&bb] = {};
-    for (const auto &allBB : f)
+    for (auto &allBB : f)
       doms[&bb].insert(&allBB);
   }
 
   bool changed = true;
   while (changed) {
     changed = false;
-    for (const auto &[bb, _] : doms) {
+    for (auto &[bb, _] : doms) {
       auto preds = bb->predecessors();
-      std::set<const BasicBlock *> new_doms = {bb};
+      std::set<BasicBlock *> new_doms = {bb};
       if (!preds.empty()) {
         // Take the intersection of the dominators common to all predecessors
         new_doms = doms[*preds.begin()];
         for (auto pred : preds) {
-          std::set<const BasicBlock *> temp;
+          std::set<BasicBlock *> temp;
           std::set_intersection(new_doms.begin(), new_doms.end(),
                                 doms[pred].begin(), doms[pred].end(),
                                 std::inserter(temp, temp.begin()));
@@ -48,13 +48,11 @@ computeDominatorMap(const Function &f) {
 // The dominance tree is given by the immediate dominators only.
 // Iterate over the dominators map and rule out every dominator that is not
 // the immediate dominator.
-static std::map<const BasicBlock *, const BasicBlock *>
-computeImmediateDominatorMap(
-    const Function &f,
-    const std::map<const BasicBlock *, std::set<const BasicBlock *>>
-        &dominators) {
-  std::map<const BasicBlock *, const BasicBlock *> idoms;
-  for (const auto &bb : f) {
+static std::map<BasicBlock *, BasicBlock *> computeImmediateDominatorMap(
+    Function &f,
+    const std::map<BasicBlock *, std::set<BasicBlock *>> &dominators) {
+  std::map<BasicBlock *, BasicBlock *> idoms;
+  for (auto &bb : f) {
     // The entry block has no immediate dominator
     if (&bb == &f[0]) {
       idoms[&bb] = nullptr;
@@ -62,15 +60,15 @@ computeImmediateDominatorMap(
     }
 
     const auto &doms = dominators.at(&bb);
-    std::set<const BasicBlock *> strict_doms(doms.begin(), doms.end());
+    std::set<BasicBlock *> strict_doms(doms.begin(), doms.end());
     strict_doms.erase(&bb);
 
     // `d` immediately dominates `bb` iff `d` dominates `bb` but `d` does not
     // strictly dominate any `other` node that strictly dominates `bb`
-    const BasicBlock *idom = nullptr;
-    for (const BasicBlock *d : strict_doms) {
+    BasicBlock *idom = nullptr;
+    for (BasicBlock *d : strict_doms) {
       bool is_idom = true;
-      for (const BasicBlock *other : strict_doms) {
+      for (BasicBlock *other : strict_doms) {
         if (other == d)
           continue;
         if (dominators.at(other).count(d)) {
@@ -93,22 +91,20 @@ computeImmediateDominatorMap(
 // The dominance tree is given by the immediate dominators only.
 // Iterate over the dominators map and rule out every dominator that is not
 // the immediate dominator.
-static std::map<const BasicBlock *, std::set<const BasicBlock *>>
-computeDominanceFrontier(
-    const Function &f,
-    const std::map<const BasicBlock *, std::set<const BasicBlock *>> &doms) {
-  std::map<const BasicBlock *, std::set<const BasicBlock *>> dfront;
-  for (const auto &bb : f) {
+static std::map<BasicBlock *, std::set<BasicBlock *>> computeDominanceFrontier(
+    Function &f, const std::map<BasicBlock *, std::set<BasicBlock *>> &doms) {
+  std::map<BasicBlock *, std::set<BasicBlock *>> dfront;
+  for (auto &bb : f) {
     dfront[&bb] = {};
 
     // `bb`'s domination frontier contains `d` if `bb` does not strictly
     // dominate `d`, but `bb` dominates some predecessor of `d`.
-    for (const auto &d : f) {
+    for (auto &d : f) {
       if (doms.at(&d).count(&bb) && &d != &bb)
         continue;
 
       bool doms_any_pred = false;
-      for (const auto pred : d.predecessors()) {
+      for (auto pred : d.predecessors()) {
         if (doms.at(pred).count(&bb)) {
           doms_any_pred = true;
           break;
@@ -123,7 +119,7 @@ computeDominanceFrontier(
   return dfront;
 }
 
-DomTree DomTree::build(const Function &f) {
+DomTree DomTree::build(Function &f) {
   auto doms = computeDominatorMap(f);
   auto idoms = computeImmediateDominatorMap(f, doms);
   auto dfront = computeDominanceFrontier(f, doms);

@@ -5,16 +5,16 @@
 #include "function.h"
 
 class DomTree {
-  std::map<const BasicBlock *, std::set<const BasicBlock *>> m_doms;
-  std::map<const BasicBlock *, const BasicBlock *> m_idoms;
-  std::map<const BasicBlock *, std::set<const BasicBlock *>> m_dfront;
+  std::map<BasicBlock *, std::set<BasicBlock *>> m_doms;
+  std::map<BasicBlock *, BasicBlock *> m_idoms;
+  std::map<BasicBlock *, std::set<BasicBlock *>> m_dfront;
 
 public:
-  DomTree(std::map<const BasicBlock *, std::set<const BasicBlock *>> &&doms,
-          std::map<const BasicBlock *, const BasicBlock *> &&idoms,
-          std::map<const BasicBlock *, std::set<const BasicBlock *>> &&dfront)
+  DomTree(std::map<BasicBlock *, std::set<BasicBlock *>> &&doms,
+          std::map<BasicBlock *, BasicBlock *> &&idoms,
+          std::map<BasicBlock *, std::set<BasicBlock *>> &&dfront)
       : m_doms(doms), m_idoms(idoms), m_dfront(dfront) {}
-  static DomTree build(const Function &f);
+  static DomTree build(Function &f);
   void writeDot(std::ostream &os) const;
   void writeDominators(std::ostream &os) const;
   void writeImmediateDominators(std::ostream &os) const;

@@ -23,6 +23,10 @@ public:
     assert(i >= 0 && i < m_bbs.size());
     return m_bbs[i];
   }
+  BasicBlock &operator[](size_t i) {
+    assert(i >= 0 && i < m_bbs.size());
+    return m_bbs[i];
+  }
 
   const BasicBlock &bb(std::string name) const {
     for (const auto &bb : m_bbs)

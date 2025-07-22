@@ -16,6 +16,10 @@ public:
     assert(i >= 0 && i < m_funcs.size());
     return m_funcs[i];
   }
+  Function &operator[](size_t i) {
+    assert(i >= 0 && i < m_funcs.size());
+    return m_funcs[i];
+  }
   auto begin() { return m_funcs.begin(); }
   auto end() { return m_funcs.end(); }
   auto begin() const { return m_funcs.begin(); }
