@@ -3,6 +3,37 @@
 
 using Json = nlohmann::json;
 
+static Json toJson(Opcode op) {
+  switch (op) {
+  case Opcode::Const:
+    return Json("const");
+  case Opcode::Id:
+    return Json("id");
+  case Opcode::Br:
+    return Json("br");
+  case Opcode::Jmp:
+    return Json("jmp");
+  case Opcode::Add:
+    return Json("add");
+  case Opcode::Mul:
+    return Json("mul");
+  case Opcode::Sub:
+    return Json("sub");
+  case Opcode::Print:
+    return Json("print");
+  case Opcode::Eq:
+    return Json("eq");
+  case Opcode::Lt:
+    return Json("lt");
+  case Opcode::Gt:
+    return Json("gt");
+  case Opcode::Phi:
+    return Json("phi");
+  default:
+    assert(false && "Invalid opcode");
+  }
+}
+
 std::unique_ptr<Instruction> Instruction::fromJson(const Json &instr) {
   auto parse_opcode([](std::string_view op) {
     if (op == "const")
@@ -152,7 +183,7 @@ Json CmpInstruction::toJson() const {
 
   return {{"args", args},
           {"dest", m_dest.value().toJson()},
-          {"op", m_opcode},
+          {"op", ::toJson(m_opcode)},
           {"type", m_type.toJson()}};
 }
 
@@ -162,6 +193,29 @@ Json PrintInstruction::toJson() const {
     args.push_back(arg.toJson());
 
   return {{"op", "print"}, {"args", args}};
+}
+
+std::optional<std::string_view>
+PhiInstruction::getEntry(std::string_view label) const {
+  for (size_t i = 0; i < m_labels.size(); ++i)
+    if (m_labels[i] == label)
+      return m_args[i].getName();
+  return std::nullopt;
+}
+
+void PhiInstruction::addIncoming(Var &&var, std::string &&label) {
+  m_args.push_back(std::move(var)), m_labels.push_back(std::move(label));
+}
+
+void PhiInstruction::renameEntry(std::string_view label,
+                                 std::string &&new_name) {
+  for (size_t i = 0; i < m_labels.size(); ++i) {
+    if (m_labels[i] == label) {
+      m_args[i].setName(std::move(new_name));
+      return;
+    }
+  }
+  assert(false && "Tried to rename a non-existing entry in a phi node");
 }
 
 Json PhiInstruction::toJson() const {

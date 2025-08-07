@@ -1,0 +1,68 @@
+# RUN: cat %s | bril2json | to-ssa-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   one: int = const 1;
+# CHECK-NEXT:   ten: int = const 10;
+# CHECK-NEXT:   x: int = const 0;
+# CHECK-NEXT:   y: int = const 0;
+# CHECK-NEXT: .loop:
+# CHECK-NEXT:   y.1: int = phi y y.6 .entry .end;
+# CHECK-NEXT:   x.1: int = phi x x.5 .entry .end;
+# CHECK-NEXT:   y.2: int = add y.1 x.1;
+# CHECK-NEXT:   x.2: int = add x.1 one;
+# CHECK-NEXT:   cond.1: bool = lt y.2 ten;
+# CHECK-NEXT:   br cond.1 .left .right;
+# CHECK-NEXT: .left:
+# CHECK-NEXT:   x.3: int = const 0;
+# CHECK-NEXT:   y.3: int = const 0;
+# CHECK-NEXT:   jmp .end;
+# CHECK-NEXT: .right:
+# CHECK-NEXT:   x.4: int = const 1;
+# CHECK-NEXT:   y.4: int = const 1;
+# CHECK-NEXT:   cond.2: bool = gt y.4 ten;
+# CHECK-NEXT:   br cond.2 .exit .end;
+# CHECK-NEXT: .end:
+# CHECK-NEXT:   y.5: int = phi y.3 y.4 .left .right;
+# CHECK-NEXT:   x.5: int = phi x.3 x.4 .left .right;
+# CHECK-NEXT:   y.6: int = add y.5 x.5;
+# CHECK-NEXT:   cond.4: bool = gt x.5 ten;
+# CHECK-NEXT:   br cond.4 .loop .exit;
+# CHECK-NEXT: .exit:
+# CHECK-NEXT:   y.7: int = phi y.4 y.6 .right .end;
+# CHECK-NEXT:   x.6: int = phi x.4 x.5 .right .end;
+# CHECK-NEXT:   cond.5: bool = phi cond.2 cond.4 .right .end;
+# CHECK-NEXT:   print x.6;
+# CHECK-NEXT:   print y.7;
+# CHECK-NEXT: }
+@main {
+  one: int = const 1;
+  ten: int = const 10;
+  x: int = const 0;
+  y: int = const 0;
+
+.loop:
+  y: int = add y x;
+  x: int = add x one;
+  cond: bool = lt y ten;
+  br cond .left .right;
+
+.left:
+  x: int = const 0;
+  y: int = const 0;
+  jmp .end;
+
+.right:
+  x: int = const 1;
+  y: int = const 1;
+  cond: bool = gt y ten;
+  br cond .exit .end;
+
+.end:
+  y: int = add y x;
+  cond: bool = gt x ten;
+  br cond .loop .exit;
+
+.exit:
+  print x;
+  print y;
+}

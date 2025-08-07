@@ -126,6 +126,20 @@ DomTree DomTree::build(Function &f) {
   return DomTree(std::move(doms), std::move(idoms), std::move(dfront));
 }
 
+std::set<BasicBlock *> DomTree::children(BasicBlock &bb) const {
+  std::set<BasicBlock *> children;
+  for (auto [dominated, dominator] : m_idoms)
+    if (dominator == &bb)
+      children.insert(dominated);
+  return children;
+}
+
+std::set<BasicBlock *> DomTree::dfront(BasicBlock &bb) const {
+  if (!m_dfront.contains(&bb))
+    return {};
+  return m_dfront.at(&bb);
+}
+
 void DomTree::writeDot(std::ostream &os) const {
   os << "digraph G {\n";
   for (const auto &[bb, _] : m_idoms)

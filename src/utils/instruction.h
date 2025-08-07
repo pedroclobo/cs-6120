@@ -8,7 +8,11 @@
 #include "value.h"
 #include "var.h"
 
+using Json = nlohmann::json;
+
 enum class Opcode { Const, Id, Br, Jmp, Add, Mul, Sub, Print, Eq, Lt, Gt, Phi };
+
+class BasicBlock;
 
 class Instruction {
 protected:
@@ -152,10 +156,15 @@ class PhiInstruction : public Instruction {
   std::vector<std::string> m_labels;
 
 public:
+  PhiInstruction(Var dest, Type type)
+      : Instruction({}, std::move(dest), type), m_labels({}) {}
   PhiInstruction(Var dest, Type type, std::vector<Var> args,
                  std::vector<std::string> labels)
       : Instruction(args, std::move(dest), type), m_labels(labels) {}
 
   Opcode getOpcode() const override { return Opcode::Phi; }
+  void addIncoming(Var &&var, std::string &&label);
+  std::optional<std::string_view> getEntry(std::string_view label) const;
+  void renameEntry(std::string_view label, std::string &&new_name);
   Json toJson() const override;
 };

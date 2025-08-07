@@ -1,0 +1,34 @@
+# RUN: cat %s | bril2json | to-ssa-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   a: int = const 42;
+# CHECK-NEXT:   b: int = const 47;
+# CHECK-NEXT:   cond: bool = const true;
+# CHECK-NEXT:   br cond .left .right;
+# CHECK-NEXT: .left:
+# CHECK-NEXT:   a.1: int = const 1;
+# CHECK-NEXT:   b.1: int = const 2;
+# CHECK-NEXT:   jmp .end;
+# CHECK-NEXT: .right:
+# CHECK-NEXT:   a.2: int = const 3;
+# CHECK-NEXT:   b.2: int = const 4;
+# CHECK-NEXT:   jmp .end;
+# CHECK-NEXT: .end:
+# CHECK-NEXT:   b.3: int = phi b.1 b.2 .left .right;
+# CHECK-NEXT:   a.3: int = phi a.1 a.2 .left .right;
+# CHECK-NEXT:   print a.3;
+# CHECK-NEXT:   print b.3;
+# CHECK-NEXT: }
+@main {
+  a: int = const 42;
+  cond: bool = const true;
+  br cond .left .right;
+.left:
+  b: int = const 1;
+  jmp .end;
+.right:
+  a: int = const 3;
+  jmp .end;
+.end:
+  print a;
+}

@@ -15,6 +15,8 @@ public:
           std::map<BasicBlock *, std::set<BasicBlock *>> &&dfront)
       : m_doms(doms), m_idoms(idoms), m_dfront(dfront) {}
   static DomTree build(Function &f);
+  std::set<BasicBlock *> children(BasicBlock &bb) const;
+  std::set<BasicBlock *> dfront(BasicBlock &bb) const;
   void writeDot(std::ostream &os) const;
   void writeDominators(std::ostream &os) const;
   void writeImmediateDominators(std::ostream &os) const;

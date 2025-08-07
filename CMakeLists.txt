@@ -26,6 +26,7 @@ set(OPT_SOURCES
   src/opt/dce-opt.cpp
   src/opt/lvn-opt.cpp
   src/opt/const-analysis-opt.cpp
+  src/opt/to-ssa-opt.cpp
 )
 
 set(UTILS_SOURCES
@@ -39,7 +40,9 @@ set(UTILS_SOURCES
   src/utils/instruction.cpp
   src/utils/parser.cpp
   src/utils/program.cpp
+  src/utils/to-ssa.cpp
   src/utils/type.cpp
+  src/utils/gdce.cpp
 )
 
 set(MAIN_SOURCE
@@ -97,6 +100,16 @@ target_include_directories(const-analysis-opt PRIVATE
   ${CMAKE_SOURCE_DIR}/src/utils
 )
 
+add_executable(to-ssa-opt
+  src/opt/to-ssa-opt.cpp
+  ${UTILS_SOURCES}
+)
+target_include_directories(to-ssa-opt PRIVATE
+  ${CMAKE_SOURCE_DIR}/src/dep
+  ${CMAKE_SOURCE_DIR}/src/opt
+  ${CMAKE_SOURCE_DIR}/src/utils
+)
+
 find_program(LIT NAMES lit)
 if(NOT LIT)
     message(FATAL_ERROR "lit not found.")
@@ -104,6 +117,6 @@ endif()
 
 add_custom_target(check
   COMMAND ${LIT} -s ${CMAKE_SOURCE_DIR}/test
-  DEPENDS make-cfg dce-opt lvn-opt const-analysis-opt
+  DEPENDS make-cfg make-dom-tree dce-opt lvn-opt const-analysis-opt to-ssa-opt
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

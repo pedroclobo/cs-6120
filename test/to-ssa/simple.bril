@@ -1,0 +1,16 @@
+# RUN: cat %s | bril2json | to-ssa-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   a: int = const 4;
+# CHECK-NEXT:   b: int = const 2;
+# CHECK-NEXT:   a.1: int = add a b;
+# CHECK-NEXT:   b.1: int = add a.1 b;
+# CHECK-NEXT:   print b.1;
+# CHECK-NEXT: }
+@main {
+  a: int = const 4;
+  b: int = const 2;
+  a: int = add a b;
+  b: int = add a b;
+  print b;
+}

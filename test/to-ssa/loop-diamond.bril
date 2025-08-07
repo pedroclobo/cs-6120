@@ -1,0 +1,68 @@
+# RUN: cat %s | bril2json | to-ssa-opt | bril2txt | filecheck %s
+
+# CHECK: @main {
+# CHECK-NEXT:   one: int = const 1;
+# CHECK-NEXT:   ten: int = const 10;
+# CHECK-NEXT:   x: int = const 0;
+# CHECK-NEXT:   y: int = const 0;
+# CHECK-NEXT: .loop:
+# CHECK-NEXT:   y.1: int = phi y y.6 .entry .end;
+# CHECK-NEXT:   x.1: int = phi x x.5 .entry .end;
+# CHECK-NEXT:   cond.1: bool = lt x.1 ten;
+# CHECK-NEXT:   br cond.1 .body .exit;
+# CHECK-NEXT: .body:
+# CHECK-NEXT:   y.2: int = add y.1 x.1;
+# CHECK-NEXT:   x.2: int = add x.1 one;
+# CHECK-NEXT:   cond.2: bool = lt y.2 ten;
+# CHECK-NEXT:   br cond.2 .left .right;
+# CHECK-NEXT: .left:
+# CHECK-NEXT:   x.3: int = add x.2 one;
+# CHECK-NEXT:   y.3: int = add y.2 one;
+# CHECK-NEXT:   jmp .end;
+# CHECK-NEXT: .right:
+# CHECK-NEXT:   x.4: int = sub x.2 one;
+# CHECK-NEXT:   y.4: int = sub y.2 one;
+# CHECK-NEXT:   jmp .end;
+# CHECK-NEXT: .end:
+# CHECK-NEXT:   y.5: int = phi y.3 y.4 .left .right;
+# CHECK-NEXT:   x.5: int = phi x.3 x.4 .left .right;
+# CHECK-NEXT:   y.6: int = add y.5 x.5;
+# CHECK-NEXT:   jmp .loop;
+# CHECK-NEXT: .exit:
+# CHECK-NEXT:   print x.1;
+# CHECK-NEXT:   print y.1;
+# CHECK-NEXT: }
+@main {
+  one: int = const 1;
+  ten: int = const 10;
+  x: int = const 0;
+  y: int = const 0;
+
+.loop:
+  cond: bool = lt x ten;
+  br cond .body .exit;
+
+.body:
+  y: int = add y x;
+  x: int = add x one;
+  cond: bool = lt y ten;
+  br cond .left .right;
+
+.left:
+  x: int = add x one;
+  y: int = add y one;
+  jmp .end;
+
+.right:
+  x: int = sub x one;
+  y: int = sub y one;
+  jmp .end;
+
+.end:
+  y: int = add y x;
+  jmp .loop;
+
+.exit:
+  print x;
+  print y;
+}

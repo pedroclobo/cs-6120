@@ -49,7 +49,7 @@ Program Parser::parse(std::string_view prog) {
         if (bb_name == bb.getName())
           return &bb;
       }
-      std::unreachable();
+      assert(false && "No BB found with that name");
     };
 
     // Set basic block successors and predecessors

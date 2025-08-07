@@ -46,6 +46,10 @@ void BasicBlock::removeInstruction(size_t i) {
   m_instructions.erase(m_instructions.begin() + static_cast<long>(i));
 }
 
+BasicBlock::iterator BasicBlock::eraseInstruction(iterator pos) {
+  return m_instructions.erase(pos);
+}
+
 void BasicBlock::addPrecedessor(BasicBlock &bb) {
   m_predecessors.push_back(&bb);
 }

@@ -41,6 +41,10 @@ public:
   auto end() { return m_bbs.end(); }
   auto begin() const { return m_bbs.begin(); }
   auto end() const { return m_bbs.end(); }
+  auto rbegin() { return m_bbs.rbegin(); }
+  auto rend() { return m_bbs.rend(); }
+  auto rbegin() const { return m_bbs.rbegin(); }
+  auto rend() const { return m_bbs.rend(); }
 
   Json toJson() const;
   friend std::ostream &operator<<(std::ostream &os, const Function &f);
